@@ -1,0 +1,96 @@
+create schema motorcyclerental;
+
+create table  motorcyclerental.users(
+    userId int(5) not null auto_increment primary key,
+    userName varchar(30) not null,
+    userSurname varchar(30) not null,
+    userLogin varchar(30) not null,
+    userPassword varchar(30) not null,
+    userEmail varchar(255) not null,
+    UNIQUE (userLogin, userEmail)
+);
+
+create table motorcyclerental.userRoles(
+    userRoleId int(5) not null auto_increment primary key,
+    userRoleType varchar(255)  not null,
+    UNIQUE (userRoleType)
+);
+
+create table motorcyclerental.appUserRole(
+    appUserId int(5) not null,
+    appUserRoleId int(5) not null,
+    PRIMARY KEY (appUserId, appUserRoleId),
+    FOREIGN KEY (appUserId) REFERENCES users(userId),
+    FOREIGN KEY (appUserRoleId) REFERENCES userRoles(userRoleId)
+
+);
+create table motorcyclerental.location(
+    locationId int(5) not null auto_increment primary key,
+    country varchar(40) not null,
+    city varchar(40) not null,
+    address varchar(100) not null,
+    email varchar(100) not null
+);
+
+create table motorcyclerental.status(
+    statusIdentifier varchar(5) not null primary key,
+    statusName varchar(30) not null
+);
+
+create table motorcyclerental.motorcycle(
+    motorcycleId int(5) not null auto_increment primary key,
+    motorcycleName varchar(30) not null,
+    motorcycleModel varchar(50) not null,
+    motorcycleType varchar(50) not null,
+    motorcycleAmount int(5) not null,
+    motorcycleStatus varchar(5) not null,
+    motorcycleLocationId int(5),
+    FOREIGN KEY (motorcycleLocationId) REFERENCES location(locationId),
+    FOREIGN KEY (motorcycleStatus) REFERENCES status(statusIdentifier)
+);
+
+create table motorcyclerental.motorcycleParameters(
+    parametersId int(5) not null auto_increment primary key,
+    motorcycleYear varchar(10) not null,
+    motorcycleColour varchar(30) not null,
+    motorcycleMileAge varchar(10) not null,
+    transmissionType varchar(15) not null,
+    FOREIGN KEY (parametersId) references motorcycle(motorcycleId)
+);
+
+create table motorcyclerental.features(
+    featuresCode varchar(5) not null primary key,
+    description varchar(30) not null
+);
+
+create table motorcyclerental.motorcycleFeatures(
+    motoFeatureId int(5) not null,
+    equipmentId varchar(5) not null,
+    PRIMARY KEY (motoFeatureId, equipmentId),
+    FOREIGN KEY (motoFeatureId) REFERENCES motorcycle(motorcycleId),
+    FOREIGN KEY (equipmentId) REFERENCES features(featuresCode)
+);
+
+create table motorcyclerental.comments(
+    commentId int(5) not null auto_increment primary key,
+    motoCommentId int(5) not null,
+    commentText varchar(5000) not null,
+    login varchar(30) not null,
+    commentDate datetime not null,
+    FOREIGN KEY (motoCommentId) REFERENCES motorcycle(motorcycleId),
+    FOREIGN KEY (login) REFERENCES users(userLogin)
+);
+
+create table motorcyclerental.bookings(
+    bookingId int(5) not null auto_increment primary key,
+    bookingUserId int(5) not null,
+    bookingMotorcycleId int(5) not null,
+    bookingStatus varchar(5) not null,
+    receiptDate datetime not null,
+    returnDate datetime not null,
+    locationId int(5) not null,
+    totalAmount double not null,
+    FOREIGN KEY (bookingUserId) REFERENCES users(userId),
+    FOREIGN KEY (bookingMotorcycleId) REFERENCES  motorcycle(motorcycleId),
+    FOREIGN KEY (bookingStatus) REFERENCES status(statusIdentifier)
+);
